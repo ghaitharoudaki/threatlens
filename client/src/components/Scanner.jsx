@@ -53,7 +53,12 @@ export default function Scanner({ onAnalyze, loading }) {
   const handleSubmit = () => {
     if (url.trim()) {
       setShowSuggestions(false)
-      onAnalyze(url.trim())
+      let finalUrl = url.trim()
+      if (!/^https?:\/\//i.test(finalUrl)) {
+        finalUrl = 'https://' + finalUrl
+      }
+      setUrl(finalUrl)
+      onAnalyze(finalUrl)
     }
   }
 
@@ -75,7 +80,6 @@ export default function Scanner({ onAnalyze, loading }) {
     }
   }
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e) => {
       if (!containerRef.current?.contains(e.target)) {
@@ -112,11 +116,10 @@ export default function Scanner({ onAnalyze, loading }) {
             onChange={e => handleChange(e.target.value)}
             onKeyDown={handleKey}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-            placeholder="https://suspicious-domain.com/login"
+            placeholder="Enter any URL or domain... e.g. suspicious-site.com"
             className="input-field"
           />
 
-          {/* Suggestions dropdown */}
           {showSuggestions && (
             <div className="absolute top-full left-0 right-0 mt-1 card overflow-hidden z-50" style={{ border: '1px solid rgba(74,222,128,0.2)' }}>
               {suggestions.map((site, i) => (
@@ -130,7 +133,6 @@ export default function Scanner({ onAnalyze, loading }) {
                   }}
                   onMouseEnter={() => setHighlighted(i)}
                 >
-                  {/* Globe icon */}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="2" y1="12" x2="22" y2="12"/>
